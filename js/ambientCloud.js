@@ -1,11 +1,15 @@
 ambientCloud = function() {
 
-  var client_id          = 'YOUR_CLIENT_ID'; // default id if you don't want to provide auth
-  var player_id_selector = 'player';
-  var player_selector    = null;
-  var is_auto_embed      = true;            // embed Soundcloud player at initialization
-  var search_limit       = 200;             // pagination limit while searching tracks
-  var search_query       = {
+  var client_id           = 'YOUR_CLIENT_ID'; // default id if you don't want to provide auth
+  var player_id_selector  = 'player';
+  var audio               = null;
+  var track               = null;
+  var controls_btn        = {
+    'play_pause': null
+  };
+  var is_player_auto_play = true;
+  var search_limit        = 200;             // pagination limit while searching tracks
+  var search_query        = {
     q:            'ambient',
     genre_or_tag: 'ambient ambient',
     limit:        200                      // max value is 200
@@ -16,36 +20,67 @@ ambientCloud = function() {
       alert('Soundcloud not initialized');
       return false;
     }
-    player_selector = document.getElementById(player_id_selector);
-    if (is_auto_embed)
-      playRandomTrack();
+    // Authenticate to Soundcloud
+    SC.initialize({
+      client_id: client_id
+    });
+    btn_add_listeners();
+    if (is_player_auto_play)
+      play_random_track();
   };
 
-  var play = function(track_url) {
-    SC.whenStreamingReady(function() {
-      SC.oEmbed(track_url, { auto_play: true }, player_selector);
-    })
-  };
-
-  var playRandomTrack = function() {
+  var play_random_track = function() {
     SC.get('/tracks', search_query, function(trackList) {
-
-      var track = pickRandomTrack(trackList);
-      play(track.permalink_url);
+      track = pick_random_track(trackList);
+      SC.stream("/tracks/"+track.id, play);
     });
   };
 
-  var pickRandomTrack = function(trackList) {
-    if (trackList === null || trackList.length === 0)
+  var pick_random_track = function(list_track) {
+    if (list_track === null || list_track.length === 0)
       alert('No tracklist found');
 
     var min   = 0;
-    var max   = trackList.length-1;
+    var max   = list_track.length-1;
     var index = Math.floor(Math.random()*(max-min+1)+min);
 
-    return trackList[index];
+    return list_track[index];
   };
 
-  return{init:init, play:play}
+  var play = function(sound) {
+    audio = sound;
+    audio.play();
+
+    controls_btn.play_pause.innerText = "||";
+    refresh_interface();
+  };
+
+  var refresh_interface = function() {
+    var track_name    = document.getElementById("track-name");
+    var track_picture = document.getElementById("track-picture");
+
+    track_name.innerText = track.user.username + "-" + track.title;
+
+    var img = document.createElement("img");
+    img.src = track.artwork_url;
+    track_picture.appendChild(img);
+  };
+
+  var btn_add_listeners = function() {
+    var all_controls        = document.getElementById('controls');
+    controls_btn.play_pause = all_controls.getElementsByClassName('playPause')[0];
+
+    controls_btn.play_pause.addEventListener("click", function toggle_play_pause_btn() {
+      if (audio._player._html5Audio.paused) {
+        audio.play();
+        controls_btn.play_pause.innerText = "||";
+      } else {
+        audio.pause();
+        controls_btn.play_pause.innerText = ">";
+      }
+    }, false);
+  };
+
+  return{init:init, play:play, refresh_interface:refresh_interface}
 }();
 ambientCloud.init();
