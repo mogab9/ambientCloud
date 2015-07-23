@@ -51,7 +51,7 @@ ambientCloud = function() {
     audio = sound;
     audio.play();
 
-    controls_btn.play_pause.innerText = "||";
+    controls_btn.play_pause.textContent = "||";
     refresh_interface();
   };
 
@@ -59,7 +59,7 @@ ambientCloud = function() {
     var track_name    = document.getElementById("track-name");
     var track_picture = document.getElementById("track-picture");
 
-    track_name.innerText = track.user.username + "-" + track.title;
+    track_name.textContent = track.user.username + "-" + track.title;
 
     var img = document.createElement("img");
     img.src = track.artwork_url;
@@ -73,10 +73,10 @@ ambientCloud = function() {
     controls_btn.play_pause.addEventListener("click", function toggle_play_pause_btn() {
       if (audio._player._html5Audio.paused) {
         audio.play();
-        controls_btn.play_pause.innerText = "||";
+        controls_btn.play_pause.textContent = "||";
       } else {
         audio.pause();
-        controls_btn.play_pause.innerText = ">";
+        controls_btn.play_pause.textContent = ">";
       }
     }, false);
   };
