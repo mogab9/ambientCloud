@@ -1,9 +1,7 @@
 
-var React         = require('react');
-var PlayerActions = require('../actions/PlayerActions');
+var React = require('react');
 
 var Header = React.createClass({
-
   /**
    * @return {object}
    */

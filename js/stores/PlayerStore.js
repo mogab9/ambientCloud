@@ -54,14 +54,6 @@ function update(id, updates) {
   _player[id] = assign({}, _player[id], updates);
 }
 
-/**
- * Delete a player item.
- * @param  {string} id
- */
-function destroy(id) {
-  delete _player[id];
-}
-
 var play_random_track = function(id_player) {
   SC.get('/tracks', _player[id_player].search_query, function(trackList) {
     track = pick_random_track(trackList);
@@ -140,11 +132,6 @@ AppDispatcher.register(function(action) {
 
     case AmbientCloudConstants.PLAYER_UPDATE:
       update(action.id, {update: true});
-      PlayerStore.emitChange();
-      break;
-
-    case AmbientCloudConstants.PLAYER_DESTROY:
-      destroy(action.id);
       PlayerStore.emitChange();
       break;
 

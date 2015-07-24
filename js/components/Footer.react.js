@@ -13,8 +13,6 @@ var Footer = React.createClass({
     if (player.track == null)
       return null;
 
-    console.log(player.audio._player._html5Audio.paused);
-
   	return (
       <footer id="footer">
         <button className="playpause" onClick={this._onPlayPause} >

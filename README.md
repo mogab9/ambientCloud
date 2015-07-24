@@ -19,7 +19,6 @@ This will perform an initial build and start a watcher process that will update 
 To run the app, spin up an HTTP server and visit http://localhost/.../todomvc-flux/.  Or simply open the index.html file in a browser.
 
 ## Todo
-- Add all players button
+- Add players button
 - Switch to another random track after current track is completed
 - Upgrade randomness of tracks list
-- Add comments
