@@ -161,6 +161,11 @@ AppDispatcher.register(function(action) {
       PlayerStore.emitChange();
       break;
 
+    case AmbientCloudConstants.PLAYER_SOUNDNEXT:
+      _player[action.id].audio.pause();
+      play_random_track(action.id);
+      break;
+
     case AmbientCloudConstants.PLAYER_UPDATE:
       update(action.id, {update: true});
       PlayerStore.emitChange();

@@ -39,6 +39,15 @@ var PlayerActions = {
       id:         id
     });
   },
+  /**
+   * @param  {string} Player's id
+   */
+  soundnext: function(id) {
+    AppDispatcher.dispatch({
+      actionType: AmbientCloudConstants.PLAYER_SOUNDNEXT,
+      id:         id
+    });
+  },
 
 };
 

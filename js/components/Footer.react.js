@@ -18,6 +18,7 @@ var Footer = React.createClass({
         <button className="playpause" onClick={this._onPlayPause} >
           {player.pause ? '>' : '||' }
         </button>
+        <button className="soundnext" onClick={this._onSoundNext} > |> </button>
         <br />
         <button className="soundless" onClick={this._onSoundLess} > - </button>
         {(player.volume * 100).toFixed(0)} %
@@ -34,7 +35,10 @@ var Footer = React.createClass({
   },
   _onSoundLess: function() {
     PlayerActions.soundless(this.props.player.id);
-  }
+  },
+  _onSoundNext: function() {
+    PlayerActions.soundnext(this.props.player.id);
+  },
 
 });
 
