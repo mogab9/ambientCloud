@@ -1,1 +1,6 @@
 /* Put app css here */
+button {
+  height: 3em;
+  width: 3em;
+  margin: 0.5em;
+}

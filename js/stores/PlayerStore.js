@@ -9,7 +9,7 @@ var CHANGE_EVENT = 'change';
 var _player = {};
 
 /**
- * Create a player item.
+ * Create a Player item.
  */
 function create() {
   if (typeof(SC) !== 'object') {
@@ -22,14 +22,15 @@ function create() {
   var client_id = 'YOUR_CLIENT_ID';
 
   _player[id] = {
-    id            : id,
-    client_id     : client_id,
-    audio         : null,
-    pause         : true,
-    track         : null,
-    auto_play     : true,
-    search_limit  : 200,             // pagination limit while searching tracks
-    search_query  : {
+    id           : id,
+    client_id    : client_id,
+    audio        : null,
+    volume       : 1,
+    pause        : true,
+    track        : null,
+    auto_play    : true,
+    search_limit : 200,                      // pagination limit while searching tracks
+    search_query : {
       q:            'ambient',
       genre_or_tag: 'ambient ambient',
       limit:        200                      // max value is 200
@@ -54,9 +55,24 @@ function update(id, updates) {
   _player[id] = assign({}, _player[id], updates);
 }
 
+/**
+ * Update volume of a player item.
+ * @param  {string} id
+ * @param {float} new volume between 0.0 and 1.0
+ */
+function changeVolume(id, changeVolume) {
+  var html5Audio     = _player[id].audio._player._html5Audio;
+  _player[id].volume = Math.min( 1, Math.max( 0, _player[id].volume + changeVolume ) );
+  html5Audio.volume  = _player[id].volume;
+}
+
+/**
+ * Search a random ambient track on Soundcloud and play it on the given player
+ * @param {string} id_player the Player's id
+ */
 var play_random_track = function(id_player) {
-  SC.get('/tracks', _player[id_player].search_query, function(trackList) {
-    track = pick_random_track(trackList);
+  SC.get('/tracks', _player[id_player].search_query, function(list_track) {
+    track = pick_random_track(list_track);
     _player[id_player].track = track;
     SC.stream("/tracks/"+track.id, {id_player: id_player}, function(sound) {
       // sound is loaded, play sound, update _player data, play sound and emit event
@@ -68,6 +84,11 @@ var play_random_track = function(id_player) {
   });
 };
 
+/**
+ * Pick a random ambient track from a track list and return it.
+ * @param {array} a list of tracks
+ * @return {object} a random ambient track
+ */
 var pick_random_track = function(list_track) {
   if (list_track === null || list_track.length === 0)
     alert('No tracklist found');
@@ -127,6 +148,16 @@ AppDispatcher.register(function(action) {
         _player[action.id].pause = true;
       }
       update(action.id, {update: true});
+      PlayerStore.emitChange();
+      break;
+
+    case AmbientCloudConstants.PLAYER_SOUNDLESS:
+      changeVolume(action.id, -0.1);
+      PlayerStore.emitChange();
+      break;
+
+    case AmbientCloudConstants.PLAYER_SOUNDUP:
+      changeVolume(action.id, 0.1);
       PlayerStore.emitChange();
       break;
 
