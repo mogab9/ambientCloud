@@ -75,10 +75,12 @@ var play_random_track = function(id_player) {
     track = pick_random_track(list_track);
     _player[id_player].track = track;
     SC.stream("/tracks/"+track.id, {id_player: id_player}, function(sound) {
-      // sound is loaded, play sound, update _player data, play sound and emit event
+      // sound is loaded, play sound, update _player data, update volume,
+      // play sound and emit event
       sound.play();
-      _player[sound._player._descriptor.id_player].audio = sound;
-      _player[sound._player._descriptor.id_player].pause = false;
+      _player[sound._player._descriptor.id_player].audio  = sound;
+      _player[sound._player._descriptor.id_player].pause  = false;
+      _player[id_player].audio._player._html5Audio.volume = _player[id_player].volume;
       PlayerStore.emitChange();
     });
   });
