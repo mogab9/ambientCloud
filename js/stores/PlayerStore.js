@@ -26,6 +26,9 @@ function create() {
     client_id    : client_id,
     audio        : null,
     volume       : 1,
+    currentTime    : 0,
+    currentTimePct : 0,
+    duration       : 0,
     pause        : true,
     track        : null,
     auto_play    : true,
@@ -57,7 +60,7 @@ function update(id, updates) {
 
 /**
  * Update volume of a player item.
- * @param  {string} id
+ * @param  {string} player's id
  * @param {float} new volume between 0.0 and 1.0
  */
 function changeVolume(id, changeVolume) {
@@ -67,8 +70,19 @@ function changeVolume(id, changeVolume) {
 }
 
 /**
+ * Sync timeline position with player currentTime and duration
+ * @param {string} player's id
+ */
+function refreshTimeline(id) {
+  _player[id].currentTime    = _player[id].audio._player._html5Audio.currentTime;
+  _player[id].duration       = _player[id].audio._player._html5Audio.duration;
+  if (_player[id].duration > 0)
+    _player[id].currentTimePct = Math.round(_player[id].currentTime * 100 / _player[id].duration);
+}
+
+/**
  * Search a random ambient track on Soundcloud and play it on the given player
- * @param {string} id_player the Player's id
+ * @param {string} player's id
  */
 var play_random_track = function(id_player) {
   SC.get('/tracks', _player[id_player].search_query, function(list_track) {
@@ -78,9 +92,12 @@ var play_random_track = function(id_player) {
       // sound is loaded, play sound, update _player data, update volume,
       // play sound and emit event
       sound.play();
-      _player[sound._player._descriptor.id_player].audio  = sound;
-      _player[sound._player._descriptor.id_player].pause  = false;
+      _player[id_player].audio                            = sound;
       _player[id_player].audio._player._html5Audio.volume = _player[id_player].volume;
+      _player[id_player].pause                            = false;
+      _player[id_player].currentTime                      = sound._player._html5Audio.currentTime;
+      _player[id_player].duration                         = sound._player._html5Audio.duration;
+
       PlayerStore.emitChange();
     });
   });
@@ -170,6 +187,11 @@ AppDispatcher.register(function(action) {
 
     case AmbientCloudConstants.PLAYER_UPDATE:
       update(action.id, {update: true});
+      PlayerStore.emitChange();
+      break;
+
+    case AmbientCloudConstants.PLAYER_REFRESHTIMELINE:
+      refreshTimeline(action.id);
       PlayerStore.emitChange();
       break;
 

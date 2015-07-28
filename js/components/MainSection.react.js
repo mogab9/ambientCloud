@@ -17,8 +17,8 @@ var MainSection = React.createClass({
    * @return {object}
    */
   render: function() {
-    // if initial state: use initial player list key
-    // else:             use normal players list key
+    // if rendering from getInitialState: use initial player list key
+    // else:                              use normal players list key
     if (this.state.hasOwnProperty('initialPlayer')) {
       var allPlayers = this.state.initialPlayer;
     } else if (Object.keys(this.props).length === 0 || Object.keys(this.props.allPlayers).length < 1) {

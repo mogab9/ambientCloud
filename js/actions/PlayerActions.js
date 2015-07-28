@@ -49,6 +49,13 @@ var PlayerActions = {
     });
   },
 
+  refreshTimeline: function(id) {
+    AppDispatcher.dispatch({
+      actionType: AmbientCloudConstants.PLAYER_REFRESHTIMELINE,
+      id:         id
+    });
+  }
+
 };
 
 module.exports = PlayerActions;
