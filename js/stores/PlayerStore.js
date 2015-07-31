@@ -22,18 +22,18 @@ function create() {
   var client_id = 'YOUR_CLIENT_ID';
 
   _player[id] = {
-    id           : id,
-    client_id    : client_id,
-    audio        : null,
-    volume       : 1,
+    id             : id,
+    client_id      : client_id,
+    audio          : null,
+    volume         : 1,
     currentTime    : 0,
     currentTimePct : 0,
     duration       : 0,
-    pause        : true,
-    track        : null,
-    auto_play    : true,
-    search_limit : 200,                      // pagination limit while searching tracks
-    search_query : {
+    pause          : true,
+    track          : null,
+    auto_play      : true,
+    search_limit   : 200,                      // pagination limit while searching tracks
+    search_query   : {
       q:            'ambient',
       genre_or_tag: 'ambient ambient',
       limit:        200                      // max value is 200
@@ -70,14 +70,27 @@ function changeVolume(id, changeVolume) {
 }
 
 /**
+ * Pause current track and play a random new track
+ * @param {string} player's id
+ */
+function playNextTrack(id) {
+  _player[id].audio.pause();
+  _player[id].pause = true;
+  play_random_track(id);
+}
+
+/**
  * Sync timeline position with player currentTime and duration
  * @param {string} player's id
  */
 function refreshTimeline(id) {
-  _player[id].currentTime    = _player[id].audio._player._html5Audio.currentTime;
-  _player[id].duration       = _player[id].audio._player._html5Audio.duration;
+  _player[id].currentTime = _player[id].audio._player._html5Audio.currentTime;
+  _player[id].duration    = _player[id].audio._player._html5Audio.duration;
   if (_player[id].duration > 0)
     _player[id].currentTimePct = Math.round(_player[id].currentTime * 100 / _player[id].duration);
+  // song is over, play next song
+  if (_player[id].currentTime >= _player[id].duration && _player[id].pause == false)
+    playNextTrack(id);
 }
 
 /**
@@ -181,8 +194,7 @@ AppDispatcher.register(function(action) {
       break;
 
     case AmbientCloudConstants.PLAYER_SOUNDNEXT:
-      _player[action.id].audio.pause();
-      play_random_track(action.id);
+      playNextTrack(action.id);
       break;
 
     case AmbientCloudConstants.PLAYER_UPDATE:

@@ -22,11 +22,34 @@ var TimeLine = React.createClass({
   },
 
   /**
+  * Display timeline time for given time. Format is 00:00
+  * @param {float} time  a time in seconds
+  */
+  _displayTime: function(time) {
+    var min = seconds = '~~';
+
+    if (!isNaN(time)) {
+      var min     = Math.floor(time.toFixed(0) / 60);
+      var seconds = time.toFixed(0) % 60;
+      if (min < 10)
+        min = '0'+ min;
+      if (seconds < 10)
+        seconds = '0' + seconds;
+    }
+
+    return min + ':' + seconds;
+  },
+
+  /**
    * @return {object}
    */
   render: function() {
     return (
-      <input readOnly type="range" min="0" max="100" value={this.props.player.currentTimePct} />
+      <div id="timeline">
+        <p id="current">{this._displayTime(this.props.player.currentTime)}</p>
+        <input readOnly type="range" min="0" max="100" value={this.props.player.currentTimePct} />
+        <p id="duration">{this._displayTime(this.props.player.duration)}</p>
+      </div>
     );
   },
 

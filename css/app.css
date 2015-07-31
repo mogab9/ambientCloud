@@ -113,7 +113,7 @@ button:hover {
 #main{
     margin: 50px auto;
     width: 500px;
-    height: 155px;
+    height: 235px;
     overflow: hidden;
     background-color: #313131;
     padding-left: 1rem;
@@ -128,7 +128,10 @@ img{
   height: 100px;
   background-position: center center;
 }
-
+#timeline {
+  position: relative;
+  top: 55px;
+}
 .PlayerItem{position:relative;}
 #footer span{
     position: absolute;
