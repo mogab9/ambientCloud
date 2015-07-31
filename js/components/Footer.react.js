@@ -1,7 +1,7 @@
 
 var React         = require('react');
 var PlayerActions = require('../actions/PlayerActions');
-
+var TimeLine = require('./TimeLine.react');
 var Footer = React.createClass({
 
   /**
@@ -15,13 +15,21 @@ var Footer = React.createClass({
 
   	return (
       <footer id="footer">
-        <button className="playpause" onClick={this._onPlayPause} >
-          {player.pause ? '>' : '||' }
+        <button className={player.pause ? 'play' : 'pause' } onClick={this._onPlayPause} >
+            <p>
+                {player.pause ? '>' : '||' }
+            </p>
         </button>
-        <button className="soundnext" onClick={this._onSoundNext} > >| </button>
-        <button className="soundless" onClick={this._onSoundLess} > - </button>
-        {(player.volume * 100).toFixed(0)} %
-        <button className="soundup" onClick={this._onSoundUp} > + </button>
+        <button className="soundnext" onClick={this._onSoundNext} > <p> >| </p> </button>
+        <button className="soundless" onClick={this._onSoundLess} > <p> - </p> </button>
+        <button className="soundup" onClick={this._onSoundUp} > <p> + </p> </button>
+        <div className="volContainer">
+            <div className="volInfo"
+            style={{ left:  (player.volume * 100).toFixed(0) + '%' }}><p>{(player.volume * 10).toFixed(0)}</p></div>
+        </div>
+        <TimeLine
+          player={this.props.player}
+        />
       </footer>
     );
   },

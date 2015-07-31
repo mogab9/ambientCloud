@@ -1,0 +1,9 @@
+$main-color: #03a9f4;
+$BG-grey: #262626;
+$grey:  #313131;
+
+@mixin bgImg($position1, $position2, $size){
+    background-position: $position1 $position2;
+    background-repeat: no-repeat;
+    background-size: $size;
+}

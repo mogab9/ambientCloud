@@ -46,8 +46,7 @@ var TimeLine = React.createClass({
   render: function() {
     return (
       <div id="timeline">
-        <p id="current">{this._displayTime(this.props.player.currentTime)}</p>
-        <input readOnly type="range" min="0" max="100" value={this.props.player.currentTimePct} />
+        <p id="current">{this._displayTime(this.props.player.currentTime)} /</p>
         <p id="duration">{this._displayTime(this.props.player.duration)}</p>
       </div>
     );

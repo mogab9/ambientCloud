@@ -1,0 +1,254 @@
+@import "reset";
+@import "var";
+@import url(http://fonts.googleapis.com/css?family=Roboto);
+
+html, body {
+    background-color: $BG-grey;
+    color: #EEE;
+    font-family: 'Roboto', sans-serif;
+}
+#header{
+    position: relative;
+    z-index: 0;
+    height: 8.5rem;
+}
+h1{
+    float: left;
+    padding-left: 1rem;
+    padding-top: 1rem;
+    line-height: 120%;
+    width: 22rem;
+    height: 6.46rem;
+    z-index: 1;
+    position: relative;
+    font-size: 1.5em;
+    span{
+        &:nth-child(3) {
+            font-size: .7em;
+            display: block;
+            &::before {
+                content: "by ";
+                font-size: .7em;
+                color: $main-color;
+            }
+        }
+        &:nth-child(2) {
+            display: none;
+        }
+    }
+}
+.BG-cover{
+    div{
+        @include bgImg(center, center, cover);
+        filter: blur(5px);
+        -webkit-filter: blur(6px);
+        -moz-filter: blur(6px);
+        -o-filter: blur(6px);
+        -ms-filter: blur(6px);
+        filter: url(#blur);filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='6');
+        width: 120%;
+        height: 120%;
+        transform: translateX(-9%) translateY(-9%);
+        position: relative;
+        &::after{
+            content:"";
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            top:0;
+            left:0;
+            position: absolute;
+        }
+    }
+    @include bgImg(center, center, cover);
+    background-image: url('img/BG.jpg');
+    position: absolute;
+    width: 100%;
+    height: 8.5rem;
+    overflow: hidden;
+}
+#timeline{
+    float:right;
+    padding-right: .5rem;
+    p{
+        font-size: .8rem;
+        padding-top: .85rem;
+        float:left;
+        &:last-child {
+            color:$main-color;
+        }
+    }
+}
+
+span
+span:last-child {
+    font-size: 1.2em;
+}
+#footer{
+    height: 2.6rem;
+    width: 100%;
+    background-color:$grey;
+    button {
+        position: relative;
+        outline: 0;
+        border: 0;
+        background-color:$grey;
+        @include bgImg(center, center, contain);
+        color: #EEE;
+        cursor: pointer;
+        z-index: 1;
+        float:left;
+        opacity: 1;
+        transition-duration: .5s;
+        transition-property: opacity;
+        p{
+            display: none;
+        }
+    }
+}
+#main{
+    margin: 50px auto;
+    width: 500px;
+    height: 235px;
+    overflow: hidden;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+}
+img{
+    z-index: 1;
+    position: relative;
+    float: left;
+    background-image: url('img/no-sound.jpg');
+    width: 100px;
+    height: 100px;
+    margin-left: 1rem;
+    margin-top: 1rem;
+    @include bgImg(center, center, auto);
+}
+#footer button:hover {
+    opacity: .7;
+}
+.play{
+    background-image: url('img/soundplay.svg');
+    width: 3rem;
+    margin-top: .3rem;
+    margin-left: .5rem;
+    height: 2rem;
+}
+.pause{
+    background-image: url('img/soundpause.svg');
+    width: 3rem;
+    margin-top: .3rem;
+    margin-left: .5rem;
+    height: 2rem;
+}
+.soundnext{
+    background-image: url('img/soundpass.svg');
+    width: 2rem;
+    margin-top: .5rem;
+    height: 1.5rem;
+}
+.soundless{
+    background-image: url('img/soundless.svg');
+    width: 1.5rem;
+    margin-top: .8rem;
+    margin-left: .5rem;
+    height: 1rem;
+}
+.soundup{
+    background-image: url('img/soundup.svg');
+    width: 1.5rem;
+    margin-top: .8rem;
+    height: 1rem;
+}
+.PlayerItem{position:relative;}
+.volContainer{
+    float:left;
+    position: relative;
+    margin-left: 1rem;
+    width: 5rem;
+    height: .5rem;
+    top:1rem;
+    background-color: lighten($grey, 10%);
+    overflow: hidden;
+    opacity: 0;
+    transition-duration: 2s;
+    transition-delay: 1s;
+    transition-property: opacity;
+}
+.volInfo {
+    &::before{
+        content: "";
+        width: 6rem;
+        height: .5rem;
+        background-color: $main-color;
+        transform: translateY(-.25rem);
+        position: absolute;
+        right: .25rem;
+    }
+    p{
+        display: none;
+    }
+    right: 0;
+    transform: translateY(-.25rem);
+    pointer-events: none;
+    position: absolute;
+    transition-duration: .2s;
+    transition-property: left;
+    background-color: lighten($main-color, 20%);
+    display:block;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+
+    pointer-events: none;
+    color: #333;
+    width: .25rem;
+    text-align: center;
+}
+.soundless:hover ~ .volContainer,
+.soundup:hover ~ .volContainer{
+    transition-duration: .3s;
+    transition-delay: 0s;
+    opacity: 1;
+}
+
+
+.timeBarContainer{
+    float:left;
+    position: relative;
+    width: 100%;
+    height: .125rem;
+    top:1rem;
+    overflow: hidden;
+}
+.timeBarInfo {
+    &::before{
+        content: "";
+        width: 50rem;
+        height: .5rem;
+        background-color: $main-color;
+        transform: translateY(-.25rem);
+        position: absolute;
+        right: .25rem;
+    }
+    p{
+        display: none;
+    }
+    right: 0;
+    transform: translateY(-.25rem);
+    pointer-events: none;
+    position: absolute;
+    transition-duration: .2s;
+    transition-property: left;
+    background-color: lighten($main-color, 20%);
+    display:block;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+
+    pointer-events: none;
+    color: #333;
+    width: .25rem;
+    text-align: center;
+}
