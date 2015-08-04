@@ -25,7 +25,7 @@ function create() {
     id             : id,
     client_id      : client_id,
     audio          : null,
-    volume         : 1,
+    volume         : 0.5,
     currentTime    : 0,
     currentTimePct : 0,
     duration       : 0,
