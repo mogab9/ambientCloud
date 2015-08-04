@@ -17,35 +17,33 @@ function create() {
     return false;
   }
   // Using the current timestamp + random number in place of a real id.
-  var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
+  var idPlayer = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
   // default id if you don't want to provide auth
-  var client_id = 'YOUR_CLIENT_ID';
+  var idClient = 'YOUR_CLIENT_ID';
 
-  _player[id] = {
-    id             : id,
-    client_id      : client_id,
-    audio          : null,
+  _player[idPlayer] = {
+    id             : idPlayer,
+    client_id      : idClient,
+    audio          : null,                   // contains Soundcloud audio object with its audio player's data
     volume         : 0.5,
     currentTime    : 0,
     currentTimePct : 0,
     duration       : 0,
     pause          : true,
-    track          : null,
+    track          : null,                   // contains track datas
     auto_play      : true,
-    search_limit   : 200,                      // pagination limit while searching tracks
     search_query   : {
       q:            'ambient',
       genre_or_tag: 'ambient ambient',
       limit:        200                      // max value is 200
-    },
-    complete: false
+    }
   };
   // Authenticate to Soundcloud
   SC.initialize({
-    client_id: client_id
+    client_id: idClient
   });
-  if (_player[id].auto_play === true)
-    play_random_track(id);
+  if (_player[idPlayer].auto_play === true)
+    playRandomTrack(idPlayer);
 }
 
 /**
@@ -64,72 +62,97 @@ function update(id, updates) {
  * @param {float} new volume between 0.0 and 1.0
  */
 function changeVolume(id, changeVolume) {
-  var html5Audio     = _player[id].audio._player._html5Audio;
-  _player[id].volume = Math.min( 1, Math.max( 0, _player[id].volume + changeVolume ) );
-  html5Audio.volume  = _player[id].volume;
+  _player[id].volume                            = Math.min( 1, Math.max( 0, _player[id].volume + changeVolume ) );
+  _player[id].audio._player._html5Audio.volume  = _player[id].volume;
+}
+
+/**
+ * Pause current audio
+ * @param {string} player's id
+ */
+function pause(idPlayer) {
+  _player[idPlayer].audio.pause();
+  _player[idPlayer].pause = true;
+}
+
+/**
+ * Play current audio
+ * @param {string} player's id
+ */
+function play(idPlayer) {
+  _player[idPlayer].audio.play();
+  _player[idPlayer].pause = false;
 }
 
 /**
  * Pause current track and play a random new track
  * @param {string} player's id
  */
-function playNextTrack(id) {
-  _player[id].audio.pause();
-  _player[id].pause = true;
-  play_random_track(id);
-}
-
-/**
- * Sync timeline position with player currentTime and duration
- * @param {string} player's id
- */
-function refreshTimeline(id) {
-  _player[id].currentTime = _player[id].audio._player._html5Audio.currentTime;
-  _player[id].duration    = _player[id].audio._player._html5Audio.duration;
-  if (_player[id].duration > 0)
-    _player[id].currentTimePct = Math.round(_player[id].currentTime * 100 / _player[id].duration);
-  // song is over, play next song
-  if (_player[id].currentTime >= _player[id].duration && _player[id].pause == false)
-    playNextTrack(id);
+function playNextTrack(idPlayer) {
+  pause(idPlayer);
+  playRandomTrack(idPlayer);
 }
 
 /**
  * Search a random ambient track on Soundcloud and play it on the given player
  * @param {string} player's id
  */
-var play_random_track = function(id_player) {
-  SC.get('/tracks', _player[id_player].search_query, function(list_track) {
-    track = pick_random_track(list_track);
-    _player[id_player].track = track;
-    SC.stream("/tracks/"+track.id, {id_player: id_player}, function(sound) {
-      // sound is loaded, play sound, update _player data, update volume,
+var playRandomTrack = function(idPlayer) {
+  SC.get('/tracks', _player[idPlayer].search_query, function(trackList) {
+    track = pickRandomTrack(trackList);
+    _player[idPlayer].track = track;
+    SC.stream("/tracks/"+track.id, {idPlayer: idPlayer}, function(audio) {
+      // audio is loaded, play sound, update _player data, update volume,
       // play sound and emit event
-      sound.play();
-      _player[id_player].audio                            = sound;
-      _player[id_player].audio._player._html5Audio.volume = _player[id_player].volume;
-      _player[id_player].pause                            = false;
-      _player[id_player].currentTime                      = sound._player._html5Audio.currentTime;
-      _player[id_player].duration                         = sound._player._html5Audio.duration;
-
+      audio.play();
+      syncPlayerWithSound(idPlayer, audio, false);
       PlayerStore.emitChange();
     });
   });
 };
 
 /**
+ * Sync timeline position with player currentTime and duration
+ * @param {string} player's id
+ */
+function refresh_timeline(idPlayer) {
+  _player[idPlayer].currentTime = _player[idPlayer].audio._player._html5Audio.currentTime;
+  _player[idPlayer].duration    = _player[idPlayer].audio._player._html5Audio.duration;
+  if (_player[idPlayer].duration > 0)
+    _player[idPlayer].currentTimePct = Math.round(_player[idPlayer].currentTime * 100 / _player[idPlayer].duration);
+  // song is over, play next song
+  if (_player[idPlayer].currentTime >= _player[idPlayer].duration && _player[idPlayer].pause == false)
+    playNextTrack(idPlayer);
+}
+
+/**
+ * Sync player item with a SC sound object
+ * @param {string} player's id
+ * @param {object} a Soundcloud sound object
+ * @param {boolean} whether player object is in pause
+ */
+var syncPlayerWithSound = function(idPlayer, audio, isPause) {
+  _player[idPlayer].audio                            = audio;
+  _player[idPlayer].audio._player._html5Audio.volume = _player[idPlayer].volume;
+  _player[idPlayer].pause                            = isPause;
+  _player[idPlayer].currentTime                      = audio._player._html5Audio.currentTime;
+  _player[idPlayer].duration                         = audio._player._html5Audio.duration;
+}
+
+/**
  * Pick a random ambient track from a track list and return it.
  * @param {array} a list of tracks
  * @return {object} a random ambient track
  */
-var pick_random_track = function(list_track) {
-  if (list_track === null || list_track.length === 0)
+var pickRandomTrack = function(trackList) {
+  if (trackList === null || trackList.length === 0)
     alert('No tracklist found');
 
   var min   = 0;
-  var max   = list_track.length-1;
+  var max   = trackList.length-1;
   var index = Math.floor(Math.random()*(max-min+1)+min);
 
-  return list_track[index];
+  return trackList[index];
 };
 
 var PlayerStore = assign({}, EventEmitter.prototype, {
@@ -173,11 +196,9 @@ AppDispatcher.register(function(action) {
     case AmbientCloudConstants.PLAYER_PLAYPAUSE:
       // play/pause audio
       if (_player[action.id].audio._player._html5Audio.paused) {
-        _player[action.id].audio.play();
-        _player[action.id].pause = false;
+        play(action.id);
       } else {
-        _player[action.id].audio.pause();
-        _player[action.id].pause = true;
+        pause(action.id);
       }
       update(action.id, {update: true});
       PlayerStore.emitChange();
@@ -203,7 +224,7 @@ AppDispatcher.register(function(action) {
       break;
 
     case AmbientCloudConstants.PLAYER_REFRESHTIMELINE:
-      refreshTimeline(action.id);
+      refresh_timeline(action.id);
       PlayerStore.emitChange();
       break;
 
