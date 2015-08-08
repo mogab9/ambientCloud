@@ -16,9 +16,7 @@ To build the project, first run this command:
 
 This will perform an initial build and start a watcher process that will update bundle.js with any changes you wish to make.  This watcher is based on [Browserify](http://browserify.org/) and [Watchify](https://github.com/substack/watchify), and it transforms React's JSX syntax into standard JavaScript with [Reactify](https://github.com/andreypopp/reactify).
 
-To run the app, spin up an HTTP server and visit http://localhost/.../todomvc-flux/.  Or simply open the index.html file in a browser.
+To run the app, spin up an HTTP server and visit http://localhost/.../ambientcloud/.  Or simply open the index.html file in a browser.
 
 ## Todo
-- Add players button
-- Switch to another random track after current track is completed
 - Upgrade randomness of tracks list

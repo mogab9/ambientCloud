@@ -22,20 +22,22 @@ var MainSection = React.createClass({
     if (this.state.hasOwnProperty('initialPlayer')) {
       var allPlayers = this.state.initialPlayer;
     } else if (Object.keys(this.props).length === 0 || Object.keys(this.props.allPlayers).length < 1) {
-      return null;
+      return (<span/>);
     } else {
       var allPlayers = this.props.allPlayers;
     }
 
-    var players = [];
-
-    for (var key in allPlayers) {
-      players.push(<PlayerItem key={key} player={allPlayers[key]} />);
-    }
-
     return (
       <section id="main">
-        <ul id="player-list">{players}</ul>
+        <ul id="player-list">
+          {
+            Object.keys(allPlayers).map( function( value, index ) {
+              return (
+                <PlayerItem key={index} player={allPlayers[value]} />
+              )
+            })
+          }
+        </ul>
       </section>
     );
   },
