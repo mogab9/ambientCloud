@@ -18,8 +18,7 @@ function create() {
   }
   // Using the current timestamp + random number in place of a real id.
   var idPlayer = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-  // default id if you don't want to provide auth
-  var idClient = 'YOUR_CLIENT_ID';
+  var idClient = '7b28010ab3f325e07a179815457497b6';
 
   _player[idPlayer] = {
     id             : idPlayer,
